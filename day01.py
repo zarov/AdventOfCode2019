@@ -17,7 +17,7 @@ def get_fuel_fuel_for(f):
 def main():
     partial_fuel = 0
     total_fuel = 0
-    with open('input.txt') as f:
+    with open('input/1.in') as f:
         masses = f.readlines()
         for mass in masses:
             module_fuel = get_fuel_for(int(mass))

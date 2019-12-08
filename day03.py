@@ -33,7 +33,7 @@ def trace_wire(wire):
     return trace
 
 def main():
-    with open('input.txt') as f:
+    with open('input/3.in') as f:
         wires = f.readlines()
         wire1 = trace_wire(wires[0].split(','))
         wire2 = trace_wire(wires[1].split(','))
