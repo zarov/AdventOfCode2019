@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
+import math
+
 def get_addr(program, mode, index, number):
     addresses = []
     for n in range(1, number + 1):
-        mode = mode / 10
+        mode = math.floor(mode / 10)
         if mode % 10 == 1:
             addresses.append(index + n)
         else:
@@ -12,45 +14,48 @@ def get_addr(program, mode, index, number):
 
     return addresses
 
-def opcode1(program, mode, index):
-    addr = get_addr(program, mode, index, 2)
-    program[program[index + 3]] = program[addr[0]] + program[addr[1]]
-
-def opcode2(program, mode, index):
-    addr = get_addr(program, mode, index, 2)
-    program[program[index + 3]] = program[addr[0]] * program[addr[1]]
-
-def opcode3(program, mode, index):
-    addr = get_addr(program, mode, index, 1)
-    #  content = input('Opcode 3 at ' + str(addr[0]) + ' : ')
-    program[addr[0]] = 1
-
-def opcode4(program, mode, index):
-    #  addr = get_addr(program, mode, index, 1)
-    print('Opcode 4 at', program[index + 1], ':', program[program[index + 1]])
-
 def execute(program):
     length = len(program)
-    i = 0
+    p = 0
     while True:
-        i = i % length
-        opcode = program[i]
+        p = p % length
+        opcode = program[p]
 
         instruction = opcode % 100
         mode = (opcode - instruction) / 10
 
         if instruction == 1:
-            opcode1(program, mode, i)
-            i += 4
+            addr = get_addr(program, mode, p, 2)
+            program[program[p + 3]] = program[addr[0]] + program[addr[1]]
+            p += 4
         elif instruction == 2:
-            opcode2(program, mode, i)
-            i += 4
+            addr = get_addr(program, mode, p, 2)
+            program[program[p + 3]] = program[addr[0]] * program[addr[1]]
+            p += 4
         elif instruction == 3:
-            opcode3(program, mode, i)
-            i += 2
+            addr = get_addr(program, mode, p, 1)
+            content = input('Opcode 3 at ' + str(addr[0]) + ' : ')
+            program[addr[0]] = int(content)
+            p += 2
         elif instruction == 4:
-            opcode4(program, mode, i)
-            i += 2
+            print('Opcode 4 at', program[p + 1], ':', program[program[p + 1]])
+            p += 2
+        elif instruction == 5:
+            addr = get_addr(program, mode, p, 2)
+            if program[addr[0]] != 0: p = program[addr[1]]
+            else: p += 3
+        elif instruction == 6:
+            addr = get_addr(program, mode, p, 2)
+            if program[addr[0]] == 0: p = program[addr[1]]
+            else: p += 3
+        elif instruction == 7:
+            addr = get_addr(program, mode, p, 2)
+            program[program[p + 3]] = 1 if program[addr[0]] < program[addr[1]] else 0
+            p += 4
+        elif instruction == 8:
+            addr = get_addr(program, mode, p, 2)
+            program[program[p + 3]] = 1 if program[addr[0]] == program[addr[1]] else 0
+            p += 4
         elif instruction == 99:
             break
         else:
